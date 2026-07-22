@@ -11,6 +11,7 @@ function renderPage() {
   );
 }
 
+
 describe('HomePage', () => {
   it('renders hero and, once the API resolves, trainers and pricing plans', async () => {
     renderPage();
