@@ -14,7 +14,9 @@ function renderApp() {
 describe('App', () => {
   it('renders hero, trainers, and all three pricing plans in English', () => {
     renderApp();
-    expect(screen.getByText('Train with real coaches.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Train with real coaches.',
+    );
     expect(screen.getByTestId('trainer-card-omar')).toBeInTheDocument();
     expect(screen.getByTestId('plan-selfGuided')).toBeInTheDocument();
     expect(screen.getByTestId('plan-coached')).toBeInTheDocument();
@@ -44,7 +46,7 @@ describe('App', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Continue' }));
     expect(screen.getByText('ELEVATE')).toBeInTheDocument();
     expect(screen.getByText('·ADMIN')).toBeInTheDocument();
-    expect(screen.getByText('active members')).toBeInTheDocument();
+    expect(screen.getByText('EGP 218k')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Exit admin' }));
     expect(screen.queryByText('·ADMIN')).not.toBeInTheDocument();
   });
@@ -67,7 +69,9 @@ describe('App', () => {
     renderApp();
     fireEvent.click(screen.getAllByRole('button', { name: 'العربية' })[0]);
     expect(document.documentElement.dir).toBe('rtl');
-    expect(screen.getByText('تدرّب مع مدربين حقيقيين.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'تدرّب مع مدربين حقيقيين.',
+    );
   });
 
   it('opens the coach chat from the daily plan section', () => {

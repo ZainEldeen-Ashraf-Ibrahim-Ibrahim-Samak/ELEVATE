@@ -28,7 +28,7 @@ export const ar: Messages = {
       'مدربون حقيقيون، خطة تتكيف كل يوم، وتمارين ووجبات تصلك مباشرة على هاتفك. بدون كلام فارغ، تمارين فقط.',
     ctaPrimary: 'احصل على خطتي',
     ctaSecondary: 'تصفح المدربين ←',
-    signature: 'ك. سيف مشالي',
+    signature: 'C. Seif Mashaly',
     imageAlt: 'رياضي يتدرب',
   },
   marquee: {
