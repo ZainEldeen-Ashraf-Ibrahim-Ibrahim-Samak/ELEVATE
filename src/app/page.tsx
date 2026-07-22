@@ -40,6 +40,7 @@ export default function HomePage() {
         <AdminDashboard />
         <CoachDashboard />
         <ChatModal />
+        
       </div>
     </AppViewModelProvider>
   );
