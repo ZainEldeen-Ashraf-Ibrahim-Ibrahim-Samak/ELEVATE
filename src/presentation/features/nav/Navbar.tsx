@@ -1,7 +1,9 @@
-import { useI18n } from '../../../core/i18n';
-import { images } from '../../../data/images';
-import { Button } from '../../components/ui';
-import { useAppVM } from '../../viewmodels/AppViewModelContext';
+'use client';
+
+import { useI18n } from '@/core/i18n';
+import { images } from '@/data/images';
+import { Button } from '@/presentation/components/ui';
+import { useAppVM } from '@/presentation/viewmodels/AppViewModelContext';
 
 const links = [
   { href: '#trainers', key: 'nav.trainers' },
@@ -17,32 +19,18 @@ export function Navbar() {
   const vm = useAppVM();
 
   return (
-    <nav
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '16px 5vw',
-        background: 'rgba(10,10,10,.85)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid var(--line)',
-        flexWrap: 'wrap',
-        rowGap: 12,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+    <nav className="sticky top-0 z-50 flex items-center justify-between px-[5vw] py-4 bg-surface/85 backdrop-blur-[10px] border-b border-line flex-wrap gap-y-3">
+      <div className="flex items-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={images.wordmark}
           alt={t('nav.logoAlt')}
-          style={{ height: 28, width: 'auto', mixBlendMode: 'screen' }}
+          className="h-7 w-auto mix-blend-screen"
         />
       </div>
 
       {vm.isMobile ? (
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="flex gap-2">
           <Button variant="ghost" size="sm" onClick={toggleLocale}>
             {t('common.languageToggle')}
           </Button>
@@ -52,26 +40,18 @@ export function Navbar() {
         </div>
       ) : (
         <>
-          <div
-            style={{
-              display: 'flex',
-              gap: 24,
-              alignItems: 'center',
-              flexWrap: 'nowrap',
-              whiteSpace: 'nowrap',
-            }}
-          >
+          <div className="flex gap-6 items-center flex-nowrap whitespace-nowrap">
             {links.map((l) => (
               <a key={l.href} href={l.href} className="navlink">
                 {t(l.key)}
               </a>
             ))}
           </div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div className="flex gap-2.5 items-center">
             <Button variant="ghost" size="sm" onClick={toggleLocale}>
               {t('common.languageToggle')}
             </Button>
-            <Button variant="primary" onClick={vm.scrollToPricing} style={{ whiteSpace: 'nowrap' }}>
+            <Button variant="primary" onClick={vm.scrollToPricing} className="whitespace-nowrap">
               {t('nav.startFree')}
             </Button>
           </div>
@@ -79,34 +59,24 @@ export function Navbar() {
       )}
 
       {vm.isMobile && vm.menuOpen && (
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            borderTop: '1px solid var(--line)',
-            paddingTop: 14,
-          }}
-        >
+        <div className="w-full flex flex-col gap-0.5 border-t border-line pt-3.5">
           {links.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="navlink"
+              className="navlink text-[15px] px-1 py-2.5"
               onClick={vm.closeMenu}
-              style={{ fontSize: 15, padding: '10px 4px' }}
             >
               {t(l.key)}
             </a>
           ))}
           <Button
             variant="primary"
+            className="mt-2 px-[22px] py-[13px]"
             onClick={() => {
               vm.closeMenu();
               vm.scrollToPricing();
             }}
-            style={{ marginTop: 8, padding: '13px 22px' }}
           >
             {t('nav.startFree')}
           </Button>

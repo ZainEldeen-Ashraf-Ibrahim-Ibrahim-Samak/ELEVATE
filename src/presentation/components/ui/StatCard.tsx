@@ -1,17 +1,8 @@
 export function StatCard({ value, label }: { value: string; label: string }) {
   return (
-    <div
-      style={{
-        background: 'var(--card)',
-        border: '1px solid rgba(255,255,255,.1)',
-        borderRadius: 16,
-        padding: 24,
-      }}
-    >
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, color: 'var(--primary)' }}>
-        {value}
-      </div>
-      <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{label}</div>
+    <div className="bg-card border border-white/10 rounded-2xl p-6">
+      <div className="font-display text-[32px] text-primary">{value}</div>
+      <div className="text-ink-muted text-[13px]">{label}</div>
     </div>
   );
 }
@@ -19,8 +10,8 @@ export function StatCard({ value, label }: { value: string; label: string }) {
 export function StatInline({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: 34 }}>{value}</div>
-      <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>{label}</div>
+      <div className="font-display text-[34px]">{value}</div>
+      <div className="text-ink-muted text-[13px]">{label}</div>
     </div>
   );
 }

@@ -1,8 +1,10 @@
-import { useI18n } from '../../../core/i18n';
-import { container } from '../../../app/container';
-import { CoverImage, StatCard } from '../../components/ui';
-import { useAppVM } from '../../viewmodels/AppViewModelContext';
-import type { CoachTab } from '../../viewmodels/useAppViewModel';
+'use client';
+
+import { useI18n } from '@/core/i18n';
+import { CoverImage, StatCard } from '@/presentation/components/ui';
+import { useAppVM } from '@/presentation/viewmodels/AppViewModelContext';
+import type { CoachTab } from '@/store/uiSlice';
+import { useGetCoachQuery } from '@/store/apiSlice';
 import { DashboardShell, InboxRow, ListPanel } from './DashboardShell';
 import type { DashboardNavItem } from './DashboardShell';
 
@@ -11,10 +13,10 @@ const tabs: CoachTab[] = ['overview', 'dietPlan', 'workoutPlan', 'messages'];
 export function CoachDashboard() {
   const { t } = useI18n();
   const vm = useAppVM();
-  if (vm.activeView !== 'coach') return null;
+  const isCoach = vm.activeView === 'coach';
+  const { data: coach } = useGetCoachQuery(undefined, { skip: !isCoach });
+  if (!isCoach) return null;
 
-  const repo = container.coachRepository;
-  const stats = repo.getStats();
   const items: DashboardNavItem<CoachTab>[] = tabs.map((id) => ({
     id,
     label: t(`trainerDash.tabs.${id}`),
@@ -31,56 +33,42 @@ export function CoachDashboard() {
       exitLabel={t('trainerDash.exit')}
       onExit={vm.exitDashboard}
     >
-      {vm.coachTab === 'overview' && (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 18,
-          }}
-        >
-          <StatCard value={String(stats.activeClients)} label={t('trainerDash.stats.activeClients')} />
-          <StatCard value={stats.avgRating.toFixed(1)} label={t('trainerDash.stats.avgRating')} />
-          <StatCard value={String(stats.weeklyCheckIns)} label={t('trainerDash.stats.checkIns')} />
-          <StatCard value={t('trainerDash.stats.earningsValue')} label={t('trainerDash.stats.earnings')} />
+      {vm.coachTab === 'overview' && coach && (
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[18px]">
+          <StatCard
+            value={String(coach.stats.activeClients)}
+            label={t('trainerDash.stats.activeClients')}
+          />
+          <StatCard
+            value={coach.stats.avgRating.toFixed(1)}
+            label={t('trainerDash.stats.avgRating')}
+          />
+          <StatCard
+            value={String(coach.stats.weeklyCheckIns)}
+            label={t('trainerDash.stats.checkIns')}
+          />
+          <StatCard
+            value={t('trainerDash.stats.earningsValue')}
+            label={t('trainerDash.stats.earnings')}
+          />
         </div>
       )}
 
-      {vm.coachTab === 'dietPlan' && (
+      {vm.coachTab === 'dietPlan' && coach && (
         <>
-          <div style={{ color: 'var(--text-muted)', fontSize: '13.5px', marginBottom: 20 }}>
-            {t('trainerDash.dietHint')}
-          </div>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: 18,
-            }}
-          >
-            {repo.getDietDays().map((d) => (
+          <div className="text-ink-muted text-[13.5px] mb-5">{t('trainerDash.dietHint')}</div>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-[18px]">
+            {coach.dietDays.map((d) => (
               <div
                 key={d.day}
-                style={{
-                  background: 'var(--card)',
-                  border: '1px solid rgba(255,255,255,.1)',
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                }}
+                className="bg-card border border-white/10 rounded-2xl overflow-hidden"
               >
-                <CoverImage src={d.image} style={{ height: 140 }} />
-                <div style={{ padding: 16 }}>
-                  <div
-                    style={{
-                      fontWeight: 800,
-                      fontSize: 14,
-                      color: 'var(--primary)',
-                      marginBottom: 4,
-                    }}
-                  >
+                <CoverImage src={d.image} className="h-[140px]" />
+                <div className="p-4">
+                  <div className="font-extrabold text-sm text-primary mb-1">
                     {t(`trainerDash.days.${d.day}`)}
                   </div>
-                  <div style={{ fontSize: '13.5px', color: '#d5d5d0' }}>{d.meal}</div>
+                  <div className="text-[13.5px] text-[#d5d5d0]">{d.meal}</div>
                 </div>
               </div>
             ))}
@@ -88,58 +76,27 @@ export function CoachDashboard() {
         </>
       )}
 
-      {vm.coachTab === 'workoutPlan' && (
+      {vm.coachTab === 'workoutPlan' && coach && (
         <>
-          <div style={{ color: 'var(--text-muted)', fontSize: '13.5px', marginBottom: 20 }}>
-            {t('trainerDash.workoutHint')}
-          </div>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: 18,
-            }}
-          >
-            {repo.getWorkoutDays().map((d) => (
+          <div className="text-ink-muted text-[13.5px] mb-5">{t('trainerDash.workoutHint')}</div>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-[18px]">
+            {coach.workoutDays.map((d) => (
               <div
                 key={d.day}
-                style={{
-                  background: 'var(--card)',
-                  border: '1px solid rgba(255,255,255,.1)',
-                  borderRadius: 16,
-                  overflow: 'hidden',
-                }}
+                className="bg-card border border-white/10 rounded-2xl overflow-hidden"
               >
-                <CoverImage src={d.image} style={{ height: 140, position: 'relative' }}>
+                <CoverImage src={d.image} className="h-[140px] relative">
                   {d.hasVideo && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: 10,
-                        insetInlineEnd: 10,
-                        background: 'rgba(0,0,0,.6)',
-                        borderRadius: 8,
-                        padding: '5px 9px',
-                        fontSize: '11.5px',
-                        fontWeight: 700,
-                      }}
-                    >
+                    <div className="absolute top-2.5 end-2.5 bg-black/60 rounded-lg px-[9px] py-[5px] text-[11.5px] font-bold">
                       {t('trainerDash.videoBadge')}
                     </div>
                   )}
                 </CoverImage>
-                <div style={{ padding: 16 }}>
-                  <div
-                    style={{
-                      fontWeight: 800,
-                      fontSize: 14,
-                      color: 'var(--primary)',
-                      marginBottom: 4,
-                    }}
-                  >
+                <div className="p-4">
+                  <div className="font-extrabold text-sm text-primary mb-1">
                     {t(`trainerDash.days.${d.day}`)}
                   </div>
-                  <div style={{ fontSize: '13.5px', color: '#d5d5d0' }}>{d.move}</div>
+                  <div className="text-[13.5px] text-[#d5d5d0]">{d.move}</div>
                 </div>
               </div>
             ))}
@@ -147,9 +104,9 @@ export function CoachDashboard() {
         </>
       )}
 
-      {vm.coachTab === 'messages' && (
+      {vm.coachTab === 'messages' && coach && (
         <ListPanel>
-          {repo.getInbox().map((msg) => (
+          {coach.inbox.map((msg) => (
             <InboxRow
               key={msg.id}
               from={msg.from}

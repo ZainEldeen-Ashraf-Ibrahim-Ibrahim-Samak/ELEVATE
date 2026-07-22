@@ -6,9 +6,9 @@ export function ProgressBar({ percent }: { percent: number }) {
       aria-valuenow={clamped}
       aria-valuemin={0}
       aria-valuemax={100}
-      style={{ height: 6, background: '#222', borderRadius: 3, overflow: 'hidden' }}
+      className="h-1.5 bg-[#222] rounded-[3px] overflow-hidden"
     >
-      <div style={{ width: `${clamped}%`, height: '100%', background: 'var(--primary)' }} />
+      <div className="h-full bg-primary" style={{ width: `${clamped}%` }} />
     </div>
   );
 }

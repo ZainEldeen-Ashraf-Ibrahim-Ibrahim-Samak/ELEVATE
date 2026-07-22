@@ -1,104 +1,61 @@
-import { useI18n } from '../../../core/i18n';
-import { container } from '../../../app/container';
-import { Eyebrow, SectionTitle } from '../../components/ui';
-import { useAppVM } from '../../viewmodels/AppViewModelContext';
+'use client';
+
+import { useI18n } from '@/core/i18n';
+import { Eyebrow, SectionTitle } from '@/presentation/components/ui';
+import { useAppVM } from '@/presentation/viewmodels/AppViewModelContext';
+import { useGetCatalogQuery } from '@/store/apiSlice';
 
 export function PricingSection() {
   const { t, tList } = useI18n();
   const vm = useAppVM();
-  const plans = container.catalogRepository.getPlans();
+  const { data } = useGetCatalogQuery();
+  const plans = data?.plans ?? [];
 
   return (
-    <section id="pricing" style={{ padding: '110px 5vw' }}>
-      <div style={{ maxWidth: 640, margin: '0 auto 56px', textAlign: 'center' }}>
+    <section id="pricing" className="px-[5vw] py-[110px]">
+      <div className="max-w-[640px] mx-auto mb-14 text-center">
         <Eyebrow>{t('pricing.eyebrow')}</Eyebrow>
         <SectionTitle size="lg">{t('pricing.title')}</SectionTitle>
       </div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: 22,
-          maxWidth: 1080,
-          margin: '0 auto',
-        }}
-      >
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[22px] max-w-[1080px] mx-auto">
         {plans.map((plan) => (
           <div
             key={plan.id}
             data-testid={`plan-${plan.id}`}
-            style={{
-              position: 'relative',
-              background: plan.highlighted ? '#141400' : 'var(--surface-alt)',
-              border: plan.highlighted ? '1px solid var(--primary)' : '1px solid rgba(255,255,255,.1)',
-              borderRadius: 20,
-              padding: '32px 28px',
-              overflow: 'hidden',
-              boxShadow: plan.highlighted ? '0 20px 60px rgba(232,255,92,.08)' : undefined,
-            }}
+            className={`relative rounded-[20px] px-7 py-8 overflow-hidden ${
+              plan.highlighted
+                ? 'bg-[#141400] border border-primary shadow-[0_20px_60px_rgba(232,255,92,.08)]'
+                : 'bg-surface-alt border border-white/10'
+            }`}
           >
             {plan.highlighted && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: -1,
-                  insetInlineEnd: 24,
-                  background: 'var(--primary)',
-                  color: 'var(--surface)',
-                  fontWeight: 800,
-                  fontSize: '11.5px',
-                  letterSpacing: '.5px',
-                  padding: '6px 14px',
-                  borderRadius: '0 0 10px 10px',
-                }}
-              >
+              <div className="absolute -top-px end-6 bg-primary text-surface font-extrabold text-[11.5px] tracking-[.5px] px-3.5 py-1.5 rounded-b-[10px]">
                 {t('pricing.mostPopular')}
               </div>
             )}
-            <div style={{ fontWeight: 800, fontSize: 19, marginBottom: 6 }}>
+            <div className="font-extrabold text-[19px] mb-1.5">
               {t(`pricing.plans.${plan.id}.name`)}
             </div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '13.5px', marginBottom: 22 }}>
+            <div className="text-ink-muted text-[13.5px] mb-[22px]">
               {t(`pricing.plans.${plan.id}.tagline`)}
             </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: 6,
-                marginBottom: 26,
-              }}
-            >
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: 42 }}>
+            <div className="flex items-baseline gap-1.5 mb-[26px]">
+              <span className="font-display text-[42px]">
                 {t(`pricing.plans.${plan.id}.price`)}
               </span>
-              <span style={{ color: 'var(--text-muted)', fontSize: 14 }}>
-                {t('common.perMonth')}
-              </span>
+              <span className="text-ink-muted text-sm">{t('common.perMonth')}</span>
             </div>
-            <div
-              style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}
-            >
+            <div className="flex flex-col gap-3 mb-7">
               {tList(`pricing.plans.${plan.id}.perks`).map((perk) => (
-                <div
-                  key={perk}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: 10,
-                    fontSize: 14,
-                    color: '#d5d5d0',
-                  }}
-                >
-                  <span style={{ color: 'var(--primary)', flexShrink: 0 }}>✓</span>
+                <div key={perk} className="flex items-start gap-2.5 text-sm text-[#d5d5d0]">
+                  <span className="text-primary shrink-0">✓</span>
                   {perk}
                 </div>
               ))}
             </div>
             <button
               type="button"
-              className={`btn ${plan.highlighted ? 'btn--card-solid' : 'btn--card'}`}
-              style={{ padding: 13, fontSize: '14.5px' }}
+              className={`${plan.highlighted ? 'btn-card-solid' : 'btn-card'} p-[13px] text-[14.5px]`}
               onClick={plan.requiresAuth ? vm.openLogin : vm.scrollToPricing}
             >
               {t(`pricing.plans.${plan.id}.cta`)}

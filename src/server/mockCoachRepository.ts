@@ -1,5 +1,5 @@
 import type { CoachRepository } from '../domain/repositories';
-import { images } from './images';
+import { images } from '../data/images';
 
 export const mockCoachRepository: CoachRepository = {
   getStats: () => ({ activeClients: 18, avgRating: 4.9, weeklyCheckIns: 6 }),

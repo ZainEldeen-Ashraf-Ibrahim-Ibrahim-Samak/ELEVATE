@@ -1,51 +1,35 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { ChatThread, SpecialtyFilter, Trainer } from '../../domain/entities';
-import { getFeaturedTrainer, getTrainers } from '../../domain/usecases/trainers';
-import { resolveUserRole } from '../../domain/usecases/auth';
-import { rotateIndex } from '../../domain/usecases/carousel';
-import { container } from '../../app/container';
+'use client';
 
-export type PlanTab = 'training' | 'diet';
-export type LoginView = 'login' | 'forgot';
-export type ActiveView = 'site' | 'admin' | 'coach';
-export type AdminTab =
-  | 'overview'
-  | 'teams'
-  | 'users'
-  | 'plans'
-  | 'dietPlan'
-  | 'workoutPlan'
-  | 'offers'
-  | 'messages';
-export type CoachTab = 'overview' | 'dietPlan' | 'workoutPlan' | 'messages';
-
-const MOBILE_BREAKPOINT = 1080;
-const OFFER_INTERVAL_MS = 5000;
+import { useCallback, useMemo } from 'react';
+import type { ChatThread, SpecialtyFilter, Trainer } from '@/domain/entities';
+import { getFeaturedTrainer, getTrainers } from '@/domain/usecases/trainers';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { uiActions } from '@/store/uiSlice';
+import type { ActiveView, AdminTab, CoachTab, LoginView, PlanTab } from '@/store/uiSlice';
+import {
+  useGetChatThreadQuery,
+  useGetTrainersQuery,
+  useLoginMutation,
+} from '@/store/apiSlice';
 
 export interface AppViewModel {
-  // responsive nav
   isMobile: boolean;
   menuOpen: boolean;
   toggleMenu: () => void;
   closeMenu: () => void;
-  // daily plan tabs
   planTab: PlanTab;
   setPlanTab: (tab: PlanTab) => void;
-  // trainers
   filter: SpecialtyFilter;
   setFilter: (f: SpecialtyFilter) => void;
   visibleTrainers: Trainer[];
-  featuredTrainer: Trainer;
+  featuredTrainer: Trainer | null;
   selectedTrainer: Trainer | null;
   openProfile: (id: string) => void;
   closeProfile: () => void;
-  // offers carousel
   offerIndex: number;
-  offerCount: number;
   nextOffer: () => void;
   prevOffer: () => void;
   goToOffer: (i: number) => void;
-  // auth + dashboards
   showLogin: boolean;
   loginView: LoginView;
   loginEmail: string;
@@ -61,142 +45,99 @@ export interface AppViewModel {
   coachTab: CoachTab;
   setCoachTab: (t: CoachTab) => void;
   exitDashboard: () => void;
-  // chat
   activeChat: string | null;
   chatThread: ChatThread | null;
   openChat: (name: string) => void;
   closeChat: () => void;
-  // navigation
   scrollToPricing: () => void;
 }
 
+/**
+ * MVVM view-model hook: exposes UI state (Redux) and remote data (RTK Query)
+ * to the views. Views never touch the store or fetch layer directly.
+ */
 export function useAppViewModel(): AppViewModel {
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' ? window.innerWidth < MOBILE_BREAKPOINT : false,
-  );
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [planTab, setPlanTab] = useState<PlanTab>('training');
-  const [filter, setFilter] = useState<SpecialtyFilter>('all');
-  const [selectedTrainerId, setSelectedTrainerId] = useState<string | null>(null);
-  const [offerIndex, setOfferIndex] = useState(0);
-  const [showLogin, setShowLogin] = useState(false);
-  const [loginView, setLoginView] = useState<LoginView>('login');
-  const [loginEmail, setLoginEmail] = useState('');
-  const [activeView, setActiveView] = useState<ActiveView>('site');
-  const [adminTab, setAdminTab] = useState<AdminTab>('overview');
-  const [coachTab, setCoachTab] = useState<CoachTab>('overview');
-  const [activeChat, setActiveChat] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const ui = useAppSelector((s) => s.ui);
+  const { data: trainers = [] } = useGetTrainersQuery();
+  const { data: chatThreadData } = useGetChatThreadQuery(ui.activeChat ?? '', {
+    skip: ui.activeChat == null,
+  });
+  const [login] = useLoginMutation();
 
-  const offerCount = container.catalogRepository.getOffers().length;
-
-  useEffect(() => {
-    const onResize = () => {
-      const mobile = window.innerWidth < MOBILE_BREAKPOINT;
-      setIsMobile((prev) => {
-        if (mobile !== prev) setMenuOpen(false);
-        return mobile;
-      });
-    };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
-  const nextOffer = useCallback(
-    () => setOfferIndex((i) => rotateIndex(i, 1, offerCount)),
-    [offerCount],
-  );
-  const prevOffer = useCallback(
-    () => setOfferIndex((i) => rotateIndex(i, -1, offerCount)),
-    [offerCount],
-  );
-
-  useEffect(() => {
-    const timer = setInterval(nextOffer, OFFER_INTERVAL_MS);
-    return () => clearInterval(timer);
-  }, [nextOffer]);
-
+  const trainerRepo = useMemo(() => ({ getAll: () => trainers }), [trainers]);
   const visibleTrainers = useMemo(
-    () => getTrainers(container.trainerRepository, filter),
-    [filter],
+    () => getTrainers(trainerRepo, ui.filter),
+    [trainerRepo, ui.filter],
   );
-  const featuredTrainer = useMemo(() => getFeaturedTrainer(container.trainerRepository), []);
+  const featuredTrainer = useMemo(
+    () => (trainers.length > 0 ? getFeaturedTrainer(trainerRepo) : null),
+    [trainerRepo, trainers.length],
+  );
   const selectedTrainer = useMemo(
     () =>
-      selectedTrainerId
-        ? (container.trainerRepository.getAll().find((t) => t.id === selectedTrainerId) ?? null)
+      ui.selectedTrainerId != null
+        ? (trainers.find((t) => t.id === ui.selectedTrainerId) ?? null)
         : null,
-    [selectedTrainerId],
+    [trainers, ui.selectedTrainerId],
   );
 
-  const chatThread = useMemo(
-    () => (activeChat ? container.chatRepository.getThread(activeChat) : null),
-    [activeChat],
-  );
-
-  const submitLogin = useCallback(() => {
-    const role = resolveUserRole(loginEmail);
-    setShowLogin(false);
-    if (role === 'admin') {
-      setActiveView('admin');
-      setAdminTab('overview');
-    } else if (role === 'trainer') {
-      setActiveView('coach');
-      setCoachTab('dietPlan');
+  const submitLogin = useCallback(async () => {
+    try {
+      const { role } = await login({ identifier: ui.loginEmail }).unwrap();
+      dispatch(uiActions.loginSucceeded(role));
+    } catch {
+      dispatch(uiActions.closeLogin());
     }
-  }, [loginEmail]);
-
-  const exitDashboard = useCallback(() => {
-    setActiveView('site');
-    setLoginEmail('');
-    setAdminTab('overview');
-    setCoachTab('overview');
-  }, []);
+  }, [dispatch, login, ui.loginEmail]);
 
   const scrollToPricing = useCallback(() => {
     document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
   return {
-    isMobile,
-    menuOpen,
-    toggleMenu: useCallback(() => setMenuOpen((v) => !v), []),
-    closeMenu: useCallback(() => setMenuOpen(false), []),
-    planTab,
-    setPlanTab,
-    filter,
-    setFilter,
+    isMobile: ui.isMobile,
+    menuOpen: ui.menuOpen,
+    toggleMenu: useCallback(() => dispatch(uiActions.toggleMenu()), [dispatch]),
+    closeMenu: useCallback(() => dispatch(uiActions.closeMenu()), [dispatch]),
+    planTab: ui.planTab,
+    setPlanTab: useCallback((tab: PlanTab) => dispatch(uiActions.setPlanTab(tab)), [dispatch]),
+    filter: ui.filter,
+    setFilter: useCallback(
+      (f: SpecialtyFilter) => dispatch(uiActions.setFilter(f)),
+      [dispatch],
+    ),
     visibleTrainers,
     featuredTrainer,
     selectedTrainer,
-    openProfile: useCallback((id: string) => setSelectedTrainerId(id), []),
-    closeProfile: useCallback(() => setSelectedTrainerId(null), []),
-    offerIndex,
-    offerCount,
-    nextOffer,
-    prevOffer,
-    goToOffer: useCallback((i: number) => setOfferIndex(i), []),
-    showLogin,
-    loginView,
-    loginEmail,
-    setLoginEmail,
-    openLogin: useCallback(() => {
-      setShowLogin(true);
-      setLoginView('login');
-    }, []),
-    closeLogin: useCallback(() => setShowLogin(false), []),
-    goForgot: useCallback(() => setLoginView('forgot'), []),
-    goLogin: useCallback(() => setLoginView('login'), []),
+    openProfile: useCallback((id: string) => dispatch(uiActions.openProfile(id)), [dispatch]),
+    closeProfile: useCallback(() => dispatch(uiActions.closeProfile()), [dispatch]),
+    offerIndex: ui.offerIndex,
+    nextOffer: useCallback(() => dispatch(uiActions.nextOffer()), [dispatch]),
+    prevOffer: useCallback(() => dispatch(uiActions.prevOffer()), [dispatch]),
+    goToOffer: useCallback((i: number) => dispatch(uiActions.goToOffer(i)), [dispatch]),
+    showLogin: ui.showLogin,
+    loginView: ui.loginView,
+    loginEmail: ui.loginEmail,
+    setLoginEmail: useCallback(
+      (v: string) => dispatch(uiActions.setLoginEmail(v)),
+      [dispatch],
+    ),
+    openLogin: useCallback(() => dispatch(uiActions.openLogin()), [dispatch]),
+    closeLogin: useCallback(() => dispatch(uiActions.closeLogin()), [dispatch]),
+    goForgot: useCallback(() => dispatch(uiActions.setLoginView('forgot')), [dispatch]),
+    goLogin: useCallback(() => dispatch(uiActions.setLoginView('login')), [dispatch]),
     submitLogin,
-    activeView,
-    adminTab,
-    setAdminTab,
-    coachTab,
-    setCoachTab,
-    exitDashboard,
-    activeChat,
-    chatThread,
-    openChat: useCallback((name: string) => setActiveChat(name), []),
-    closeChat: useCallback(() => setActiveChat(null), []),
+    activeView: ui.activeView,
+    adminTab: ui.adminTab,
+    setAdminTab: useCallback((t: AdminTab) => dispatch(uiActions.setAdminTab(t)), [dispatch]),
+    coachTab: ui.coachTab,
+    setCoachTab: useCallback((t: CoachTab) => dispatch(uiActions.setCoachTab(t)), [dispatch]),
+    exitDashboard: useCallback(() => dispatch(uiActions.exitDashboard()), [dispatch]),
+    activeChat: ui.activeChat,
+    chatThread: ui.activeChat != null ? (chatThreadData ?? null) : null,
+    openChat: useCallback((name: string) => dispatch(uiActions.openChat(name)), [dispatch]),
+    closeChat: useCallback(() => dispatch(uiActions.closeChat()), [dispatch]),
     scrollToPricing,
   };
 }

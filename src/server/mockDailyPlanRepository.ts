@@ -1,9 +1,9 @@
 import type { DailyPlan } from '../domain/entities';
 import type { DailyPlanRepository } from '../domain/repositories';
-import { images } from './images';
+import { images } from '../data/images';
 
 const today: DailyPlan = {
-  date: new Date(),
+  date: new Date().toISOString(),
   completionPct: 72,
   workouts: [
     { id: 'weightedPullups', image: images.posterMarkWhite, done: true },

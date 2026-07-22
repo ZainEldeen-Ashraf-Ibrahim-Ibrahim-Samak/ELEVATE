@@ -4,22 +4,20 @@ import type { CSSProperties, ReactNode } from 'react';
 export function CoverImage({
   src,
   position = 'center',
+  className = '',
   style,
   children,
 }: {
   src: string;
   position?: string;
+  className?: string;
   style?: CSSProperties;
   children?: ReactNode;
 }) {
   return (
     <div
-      style={{
-        backgroundImage: `url(${src})`,
-        backgroundSize: 'cover',
-        backgroundPosition: position,
-        ...style,
-      }}
+      className={`bg-cover ${className}`}
+      style={{ backgroundImage: `url(${src})`, backgroundPosition: position, ...style }}
     >
       {children}
     </div>

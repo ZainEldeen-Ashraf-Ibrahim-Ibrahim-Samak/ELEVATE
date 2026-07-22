@@ -1,28 +1,21 @@
-import { useI18n } from '../../../core/i18n';
-import { images } from '../../../data/images';
+'use client';
+
+import { useI18n } from '@/core/i18n';
+import { images } from '@/data/images';
 
 export function Footer() {
   const { t } = useI18n();
   return (
-    <footer
-      style={{
-        padding: '44px 5vw',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: 16,
-        borderTop: '1px solid var(--line)',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+    <footer className="px-[5vw] py-11 flex justify-between items-center flex-wrap gap-4 border-t border-line">
+      <div className="flex items-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={images.wordmark}
           alt={t('nav.logoAlt')}
-          style={{ height: 19, width: 'auto', mixBlendMode: 'screen' }}
+          className="h-[19px] w-auto mix-blend-screen"
         />
       </div>
-      <div style={{ color: 'var(--text-faint)', fontSize: 13 }}>{t('footer.copyright')}</div>
+      <div className="text-ink-faint text-[13px]">{t('footer.copyright')}</div>
     </footer>
   );
 }

@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black text-ink font-body antialiased;
+  }
+
+  ::selection {
+    @apply bg-primary text-surface;
+  }
+
+  a {
+    @apply text-primary no-underline;
+  }
+
+  a:hover {
+    @apply text-white;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-surface font-extrabold rounded-full cursor-pointer border-0 transition-colors hover:bg-white;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent border border-line-strong text-[#f5f5f0] font-bold rounded-full cursor-pointer transition-colors hover:border-primary hover:text-primary;
+  }
+
+  .btn-card {
+    @apply w-full bg-transparent border border-line-strong text-[#f5f5f0] font-extrabold rounded-[10px] cursor-pointer transition-colors hover:bg-primary hover:text-surface hover:border-primary;
+  }
+
+  .btn-card-solid {
+    @apply w-full bg-primary border-0 text-surface font-extrabold rounded-[10px] cursor-pointer transition-colors hover:bg-white;
+  }
+
+  .btn-icon {
+    @apply rounded-full border border-line-strong bg-transparent text-[#f5f5f0] cursor-pointer transition-colors hover:border-primary hover:text-primary;
+  }
+
+  .navlink {
+    @apply text-ink-soft text-sm font-semibold hover:text-white;
+  }
+
+  .chip-idle {
+    @apply cursor-pointer rounded-full border border-white/20 bg-transparent text-ink-soft transition-colors hover:border-primary hover:text-primary;
+  }
+
+  .chip-active {
+    @apply cursor-pointer rounded-full border border-primary bg-primary text-surface transition-colors;
+  }
+
+  .trainer-card {
+    @apply bg-surface-alt border border-line rounded-card overflow-hidden cursor-pointer transition-colors hover:border-primary;
+  }
+
+  .feature-card {
+    @apply bg-card border-2 border-white/[.16] rounded-card transition-colors hover:border-primary hover:bg-card-hover;
+  }
+
+  .inbox-row {
+    @apply transition-colors hover:bg-[#1a1a1a];
+  }
+}
+
+/* Horizontal motion tracks keep LTR direction in RTL locales */
+[dir='rtl'] .marquee-track,
+[dir='rtl'] .feature-track {
+  direction: ltr;
+}

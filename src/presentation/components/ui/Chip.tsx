@@ -11,16 +11,13 @@ export function Chip({
   children: ReactNode;
   size?: 'md' | 'lg';
 }) {
+  const sizing =
+    size === 'lg' ? 'px-5 py-2.5 font-extrabold text-[13.5px]' : 'px-4 py-[9px] font-bold text-[13px]';
   return (
     <button
       type="button"
-      className={`chip ${active ? 'chip--active' : 'chip--idle'}`}
+      className={`${active ? 'chip-active' : 'chip-idle'} ${sizing}`}
       onClick={onClick}
-      style={
-        size === 'lg'
-          ? { padding: '10px 20px', fontWeight: 800, fontSize: '13.5px' }
-          : { padding: '9px 16px', fontWeight: 700, fontSize: '13px' }
-      }
     >
       {children}
     </button>

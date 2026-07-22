@@ -1,20 +1,17 @@
-import type { CSSProperties, InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes } from 'react';
 
 export function TextInput({
-  style,
   pill = false,
+  className = '',
   ...rest
 }: InputHTMLAttributes<HTMLInputElement> & { pill?: boolean }) {
-  const base: CSSProperties = {
-    width: '100%',
-    boxSizing: 'border-box',
-    background: 'var(--surface)',
-    border: '1px solid rgba(255,255,255,.15)',
-    color: '#fff',
-    padding: pill ? '11px 14px' : '12px 14px',
-    borderRadius: pill ? 999 : 10,
-    fontSize: pill ? '13.5px' : 14,
-    fontFamily: 'var(--font-body)',
-  };
-  return <input style={{ ...base, ...style }} {...rest} />;
+  const shape = pill
+    ? 'rounded-full px-3.5 py-[11px] text-[13.5px]'
+    : 'rounded-[10px] px-3.5 py-3 text-sm';
+  return (
+    <input
+      className={`w-full box-border bg-surface border border-white/[.15] text-white font-body ${shape} ${className}`}
+      {...rest}
+    />
+  );
 }

@@ -1,7 +1,9 @@
-import { useI18n } from '../../../core/i18n';
-import type { SpecialtyFilter } from '../../../domain/entities';
-import { Chip, CoverImage, Eyebrow, SectionTitle } from '../../components/ui';
-import { useAppVM } from '../../viewmodels/AppViewModelContext';
+'use client';
+
+import { useI18n } from '@/core/i18n';
+import type { SpecialtyFilter } from '@/domain/entities';
+import { Chip, CoverImage, Eyebrow, SectionTitle } from '@/presentation/components/ui';
+import { useAppVM } from '@/presentation/viewmodels/AppViewModelContext';
 
 const filters: { id: SpecialtyFilter; key: string }[] = [
   { id: 'all', key: 'trainers.specialties.all' },
@@ -15,22 +17,13 @@ export function TrainersSection() {
   const vm = useAppVM();
 
   return (
-    <section id="trainers" style={{ padding: '110px 5vw 90px' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
-          marginBottom: 44,
-          gap: 20,
-          flexWrap: 'wrap',
-        }}
-      >
-        <div style={{ maxWidth: 600 }}>
+    <section id="trainers" className="px-[5vw] pt-[110px] pb-[90px]">
+      <div className="flex justify-between items-end mb-11 gap-5 flex-wrap">
+        <div className="max-w-[600px]">
           <Eyebrow>{t('trainers.eyebrow')}</Eyebrow>
           <SectionTitle size="lg">{t('trainers.title')}</SectionTitle>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div className="flex gap-2 flex-wrap">
           {filters.map((f) => (
             <Chip key={f.id} active={vm.filter === f.id} onClick={() => vm.setFilter(f.id)}>
               {t(f.key)}
@@ -38,13 +31,7 @@ export function TrainersSection() {
           ))}
         </div>
       </div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))',
-          gap: 22,
-        }}
-      >
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,1fr))] gap-[22px]">
         {vm.visibleTrainers.map((trainer) => (
           <div
             key={trainer.id}
@@ -55,29 +42,21 @@ export function TrainersSection() {
             <CoverImage
               src={trainer.photo}
               position={trainer.photoPos}
-              style={{ height: 180, filter: 'contrast(1.05)' }}
+              className="h-[180px] contrast-[1.05]"
             />
-            <div style={{ padding: 20 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'baseline',
-                  marginBottom: 6,
-                }}
-              >
-                <div style={{ fontWeight: 800, fontSize: 17 }}>{trainer.name}</div>
-                <div style={{ fontSize: 13, color: 'var(--primary)', fontWeight: 700 }}>
+            <div className="p-5">
+              <div className="flex justify-between items-baseline mb-1.5">
+                <div className="font-extrabold text-[17px]">{trainer.name}</div>
+                <div className="text-[13px] text-primary font-bold">
                   {t('trainers.ratingPrefix')} {trainer.rating.toFixed(1)}
                 </div>
               </div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '13.5px', marginBottom: 16 }}>
+              <div className="text-ink-muted text-[13.5px] mb-4">
                 {t(`trainers.profiles.${trainer.id}.tag`)}
               </div>
               <button
                 type="button"
-                className="btn btn--card"
-                style={{ padding: 11, fontWeight: 700, fontSize: '13.5px' }}
+                className="btn-card p-[11px] font-bold text-[13.5px]"
                 onClick={(e) => {
                   e.stopPropagation();
                   vm.openProfile(trainer.id);

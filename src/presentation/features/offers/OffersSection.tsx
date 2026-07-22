@@ -1,30 +1,25 @@
-import { useI18n } from '../../../core/i18n';
-import { container } from '../../../app/container';
-import { Button, CoverImage, Eyebrow, SectionTitle } from '../../components/ui';
-import { useAppVM } from '../../viewmodels/AppViewModelContext';
+'use client';
+
+import { useI18n } from '@/core/i18n';
+import { Button, CoverImage, Eyebrow, SectionTitle } from '@/presentation/components/ui';
+import { useAppVM } from '@/presentation/viewmodels/AppViewModelContext';
+import { useGetCatalogQuery } from '@/store/apiSlice';
 
 export function OffersSection() {
   const { t, dir } = useI18n();
   const vm = useAppVM();
-  const offers = container.catalogRepository.getOffers();
+  const { data } = useGetCatalogQuery();
+  const offers = data?.offers ?? [];
+  if (offers.length === 0) return null;
 
   return (
-    <section id="offers" style={{ padding: '90px 5vw 100px' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
-          marginBottom: 36,
-          gap: 20,
-          flexWrap: 'wrap',
-        }}
-      >
+    <section id="offers" className="px-[5vw] pt-[90px] pb-[100px]">
+      <div className="flex justify-between items-end mb-9 gap-5 flex-wrap">
         <div>
           <Eyebrow>{t('offers.eyebrow')}</Eyebrow>
           <SectionTitle size="sm">{t('offers.title')}</SectionTitle>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div className="flex gap-2.5">
           <Button variant="icon" aria-label={t('offers.prevLabel')} onClick={vm.prevOffer}>
             {dir === 'rtl' ? '→' : '←'}
           </Button>
@@ -34,98 +29,42 @@ export function OffersSection() {
         </div>
       </div>
       {/* Slider math stays LTR regardless of locale */}
-      <div style={{ overflow: 'hidden', borderRadius: 20, direction: 'ltr' }}>
+      <div className="overflow-hidden rounded-[20px]" dir="ltr">
         <div
-          style={{
-            display: 'flex',
-            transition: 'transform .45s cubic-bezier(.65,0,.35,1)',
-            transform: `translateX(-${vm.offerIndex * 100}%)`,
-          }}
+          className="flex transition-transform duration-[450ms] ease-[cubic-bezier(.65,0,.35,1)]"
+          style={{ transform: `translateX(-${vm.offerIndex * 100}%)` }}
         >
           {offers.map((o) => (
-            <div
-              key={o.id}
-              style={{
-                position: 'relative',
-                flex: '0 0 100%',
-                minHeight: 280,
-                boxSizing: 'border-box',
-                overflow: 'hidden',
-              }}
-            >
+            <div key={o.id} className="relative flex-[0_0_100%] min-h-[280px] overflow-hidden">
               <CoverImage
                 src={o.image}
                 position={o.imagePos}
-                style={{ position: 'absolute', inset: 0, filter: 'contrast(1.05)' }}
+                className="absolute inset-0 contrast-[1.05]"
               />
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background:
-                    'linear-gradient(90deg, rgba(10,10,10,.88) 0%, rgba(10,10,10,.55) 55%, rgba(10,10,10,.25) 100%)',
-                }}
-              />
+              <div className="absolute inset-0 bg-gradient-to-r from-surface/90 via-surface/55 to-surface/25" />
               <div
                 dir={dir}
-                style={{
-                  position: 'relative',
-                  zIndex: 2,
-                  padding: '44px 5vw',
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                  gap: 24,
-                  alignItems: 'center',
-                  minHeight: 280,
-                  boxSizing: 'border-box',
-                }}
+                className="relative z-[2] px-[5vw] py-11 grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-6 items-center min-h-[280px]"
               >
                 <div>
-                  <div
-                    style={{
-                      display: 'inline-block',
-                      background: 'rgba(0,0,0,.35)',
-                      color: 'var(--primary)',
-                      fontWeight: 800,
-                      fontSize: 12,
-                      letterSpacing: '.5px',
-                      padding: '6px 12px',
-                      borderRadius: 999,
-                      marginBottom: 16,
-                    }}
-                  >
+                  <div className="inline-block bg-black/35 text-primary font-extrabold text-xs tracking-[.5px] px-3 py-1.5 rounded-full mb-4">
                     {t(`offers.items.${o.id}.tag`)}
                   </div>
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: 'clamp(26px, 3.2vw, 38px)',
-                      color: 'var(--primary)',
-                      lineHeight: 1.05,
-                      marginBottom: 10,
-                      textTransform: 'uppercase',
-                    }}
-                  >
+                  <div className="font-display text-[clamp(26px,3.2vw,38px)] text-primary leading-[1.05] mb-2.5 uppercase">
                     {t(`offers.items.${o.id}.title`)}
                   </div>
-                  <div style={{ fontSize: 15, color: '#d5d5d0', maxWidth: 420 }}>
+                  <div className="text-[15px] text-[#d5d5d0] max-w-[420px]">
                     {t(`offers.items.${o.id}.desc`)}
                   </div>
                 </div>
-                <div style={{ justifySelf: 'center', textAlign: 'center' }}>
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: 56,
-                      color: 'var(--primary)',
-                    }}
-                  >
+                <div className="justify-self-center text-center">
+                  <div className="font-display text-[56px] text-primary">
                     {t(`offers.items.${o.id}.badge`)}
                   </div>
                   <Button
                     variant="primary"
+                    className="mt-2.5 px-[26px] py-[13px]"
                     onClick={vm.scrollToPricing}
-                    style={{ marginTop: 10, padding: '13px 26px' }}
                   >
                     {t(`offers.items.${o.id}.cta`)}
                   </Button>
@@ -135,22 +74,16 @@ export function OffersSection() {
           ))}
         </div>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 20 }}>
+      <div className="flex justify-center gap-2 mt-5">
         {offers.map((o, i) => (
           <button
             key={o.id}
             type="button"
             aria-label={t('offers.goToLabel', { index: i + 1 })}
             onClick={() => vm.goToOffer(i)}
-            style={{
-              width: i === vm.offerIndex ? 26 : 9,
-              height: 9,
-              borderRadius: 999,
-              border: 'none',
-              background: i === vm.offerIndex ? 'var(--primary)' : 'rgba(255,255,255,.25)',
-              cursor: 'pointer',
-              transition: 'width .3s',
-            }}
+            className={`h-[9px] rounded-full border-0 cursor-pointer transition-all ${
+              i === vm.offerIndex ? 'w-[26px] bg-primary' : 'w-[9px] bg-white/25'
+            }`}
           />
         ))}
       </div>

@@ -1,6 +1,6 @@
 import type { Challenge, Feature, Offer, PricingPlan } from '../domain/entities';
 import type { CatalogRepository } from '../domain/repositories';
-import { images } from './images';
+import { images } from '../data/images';
 
 const features: Feature[] = [
   { id: 'personalized', icon: '🎯' },

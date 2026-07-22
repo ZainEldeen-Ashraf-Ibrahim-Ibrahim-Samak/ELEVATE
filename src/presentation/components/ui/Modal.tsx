@@ -1,4 +1,4 @@
-import type { CSSProperties, MouseEvent, ReactNode } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 
 /**
  * Overlay modal: clicking the backdrop closes, clicking the panel does not.
@@ -9,14 +9,14 @@ export function Modal({
   maxWidth = 460,
   align = 'center',
   zIndex = 200,
-  panelStyle,
+  panelClassName = '',
 }: {
   onClose: () => void;
   children: ReactNode;
   maxWidth?: number;
   align?: 'center' | 'top';
   zIndex?: number;
-  panelStyle?: CSSProperties;
+  panelClassName?: string;
 }) {
   const stop = (e: MouseEvent) => e.stopPropagation();
   return (
@@ -24,30 +24,15 @@ export function Modal({
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex,
-        background: 'rgba(0,0,0,.75)',
-        backdropFilter: 'blur(4px)',
-        display: 'flex',
-        alignItems: align === 'center' ? 'center' : 'flex-start',
-        justifyContent: 'center',
-        padding: align === 'center' ? 20 : '5vh 20px',
-        overflowY: 'auto',
-      }}
+      className={`fixed inset-0 bg-black/75 backdrop-blur flex justify-center overflow-y-auto ${
+        align === 'center' ? 'items-center p-5' : 'items-start px-5 py-[5vh]'
+      }`}
+      style={{ zIndex }}
     >
       <div
         onClick={stop}
-        style={{
-          background: 'var(--surface-alt)',
-          border: '1px solid rgba(255,255,255,.12)',
-          borderRadius: 20,
-          maxWidth,
-          width: '100%',
-          overflow: 'hidden',
-          ...panelStyle,
-        }}
+        className={`bg-surface-alt border border-white/[.12] rounded-[20px] w-full overflow-hidden ${panelClassName}`}
+        style={{ maxWidth }}
       >
         {children}
       </div>
@@ -58,28 +43,18 @@ export function Modal({
 export function ModalCloseButton({
   onClick,
   label,
-  style,
+  className = '',
 }: {
   onClick: () => void;
   label: string;
-  style?: CSSProperties;
+  className?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
-      style={{
-        width: 32,
-        height: 32,
-        borderRadius: '50%',
-        background: 'rgba(255,255,255,.08)',
-        border: 'none',
-        color: '#fff',
-        fontSize: 15,
-        cursor: 'pointer',
-        ...style,
-      }}
+      className={`w-8 h-8 rounded-full bg-white/[.08] border-0 text-white text-[15px] cursor-pointer ${className}`}
     >
       ✕
     </button>

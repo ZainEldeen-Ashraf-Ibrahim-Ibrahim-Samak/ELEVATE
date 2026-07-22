@@ -1,3 +1,5 @@
+'use client';
+
 import type { ReactNode } from 'react';
 
 export interface DashboardNavItem<T extends string> {
@@ -29,31 +31,11 @@ export function DashboardShell<T extends string>({
   children: ReactNode;
 }) {
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 300,
-        background: 'var(--surface)',
-        display: 'flex',
-      }}
-    >
-      <div
-        style={{
-          width: 220,
-          flexShrink: 0,
-          background: 'var(--surface-alt)',
-          borderInlineEnd: '1px solid var(--line)',
-          padding: '24px 16px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
-          overflowY: 'auto',
-        }}
-      >
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, margin: '0 8px 24px' }}>
+    <div className="fixed inset-0 z-[300] bg-surface flex">
+      <div className="w-[220px] shrink-0 bg-surface-alt border-e border-line px-4 py-6 flex flex-col gap-1 overflow-y-auto">
+        <div className="font-display text-lg mx-2 mb-6">
           {brand}
-          <span style={{ color: 'var(--primary)' }}>{brandSuffix}</span>
+          <span className="text-primary">{brandSuffix}</span>
         </div>
         {items.map((item) => {
           const active = item.id === activeId;
@@ -62,52 +44,27 @@ export function DashboardShell<T extends string>({
               key={item.id}
               type="button"
               onClick={() => onSelect(item.id)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                textAlign: 'start',
-                background: active ? 'var(--primary)' : 'transparent',
-                color: active ? 'var(--surface)' : '#d5d5d0',
-                border: 'none',
-                padding: '11px 12px',
-                borderRadius: 10,
-                fontWeight: 700,
-                fontSize: '13.5px',
-                cursor: 'pointer',
-                fontFamily: 'var(--font-body)',
-              }}
+              className={`flex items-center gap-2.5 text-start border-0 px-3 py-[11px] rounded-[10px] font-bold text-[13.5px] cursor-pointer font-body ${
+                active ? 'bg-primary text-surface' : 'bg-transparent text-[#d5d5d0]'
+              }`}
             >
               {item.icon} {item.label}
             </button>
           );
         })}
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '24px 5vw',
-            borderBottom: '1px solid var(--line)',
-          }}
-        >
-          <div
-            style={{ fontFamily: 'var(--font-display)', fontSize: 22, textTransform: 'uppercase' }}
-          >
-            {title}
-          </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="flex justify-between items-center px-[5vw] py-6 border-b border-line">
+          <div className="font-display text-[22px] uppercase">{title}</div>
           <button
             type="button"
-            className="btn btn--ghost"
-            style={{ padding: '10px 18px', fontSize: '13.5px' }}
+            className="btn-ghost px-[18px] py-2.5 text-[13.5px]"
             onClick={onExit}
           >
             {exitLabel}
           </button>
         </div>
-        <div style={{ padding: '32px 5vw' }}>{children}</div>
+        <div className="px-[5vw] py-8">{children}</div>
       </div>
     </div>
   );
@@ -115,18 +72,7 @@ export function DashboardShell<T extends string>({
 
 export function ListPanel({ children }: { children: ReactNode }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 1,
-        background: 'var(--line)',
-        borderRadius: 14,
-        overflow: 'hidden',
-      }}
-    >
-      {children}
-    </div>
+    <div className="flex flex-col gap-px bg-line rounded-[14px] overflow-hidden">{children}</div>
   );
 }
 
@@ -143,23 +89,16 @@ export function InboxRow({
 }) {
   return (
     <div
-      className="inbox-row"
+      className={`inbox-row bg-card px-5 py-4 flex justify-between items-center gap-3 ${
+        onClick ? 'cursor-pointer' : 'cursor-default'
+      }`}
       onClick={onClick}
-      style={{
-        background: 'var(--card)',
-        padding: '16px 20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        cursor: onClick ? 'pointer' : 'default',
-        gap: 12,
-      }}
     >
       <div>
-        <div style={{ fontWeight: 700, fontSize: '14.5px' }}>{from}</div>
-        <div style={{ color: 'var(--text-muted)', fontSize: '12.5px' }}>{preview}</div>
+        <div className="font-bold text-[14.5px]">{from}</div>
+        <div className="text-ink-muted text-[12.5px]">{preview}</div>
       </div>
-      <div style={{ color: 'var(--text-muted)', fontSize: 12, flexShrink: 0 }}>{time}</div>
+      <div className="text-ink-muted text-xs shrink-0">{time}</div>
     </div>
   );
 }

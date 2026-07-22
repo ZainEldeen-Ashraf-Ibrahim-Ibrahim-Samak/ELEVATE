@@ -4,17 +4,17 @@ type Variant = 'primary' | 'ghost' | 'card' | 'cardSolid' | 'icon';
 type Size = 'sm' | 'md' | 'lg';
 
 const variantClass: Record<Variant, string> = {
-  primary: 'btn btn--primary',
-  ghost: 'btn btn--ghost',
-  card: 'btn btn--card',
-  cardSolid: 'btn btn--card-solid',
-  icon: 'btn btn--icon',
+  primary: 'btn-primary',
+  ghost: 'btn-ghost',
+  card: 'btn-card',
+  cardSolid: 'btn-card-solid',
+  icon: 'btn-icon',
 };
 
-const sizePadding: Record<Size, string> = {
-  sm: '9px 14px',
-  md: '11px 22px',
-  lg: '16px 30px',
+const sizeClass: Record<Size, string> = {
+  sm: 'px-3.5 py-[9px] text-[13px]',
+  md: 'px-[22px] py-[11px] text-sm',
+  lg: 'px-[30px] py-4 text-[15px]',
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -22,15 +22,19 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
 }
 
-export function Button({ variant = 'primary', size = 'md', style, ...rest }: ButtonProps) {
-  const base =
+export function Button({
+  variant = 'primary',
+  size = 'md',
+  className = '',
+  ...rest
+}: ButtonProps) {
+  const sizing =
     variant === 'card' || variant === 'cardSolid'
-      ? { padding: '13px', fontSize: '14.5px' }
+      ? 'p-[13px] text-[14.5px]'
       : variant === 'icon'
-        ? { width: 44, height: 44, fontSize: 18 }
-        : {
-            padding: sizePadding[size],
-            fontSize: size === 'lg' ? '15px' : size === 'sm' ? '13px' : '14px',
-          };
-  return <button className={variantClass[variant]} style={{ ...base, ...style }} {...rest} />;
+        ? 'w-11 h-11 text-lg'
+        : sizeClass[size];
+  return (
+    <button type="button" className={`${variantClass[variant]} ${sizing} ${className}`} {...rest} />
+  );
 }

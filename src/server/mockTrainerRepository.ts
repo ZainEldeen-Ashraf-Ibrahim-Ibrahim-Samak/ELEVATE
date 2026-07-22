@@ -1,6 +1,6 @@
 import type { Trainer } from '../domain/entities';
 import type { TrainerRepository } from '../domain/repositories';
-import { images } from './images';
+import { images } from '../data/images';
 
 const trainers: Trainer[] = [
   {

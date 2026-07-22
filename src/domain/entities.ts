@@ -55,7 +55,8 @@ export interface MealItem {
 }
 
 export interface DailyPlan {
-  date: Date;
+  /** ISO date string so the entity survives JSON transport untouched. */
+  date: string;
   completionPct: number;
   workouts: WorkoutItem[];
   meals: MealItem[];

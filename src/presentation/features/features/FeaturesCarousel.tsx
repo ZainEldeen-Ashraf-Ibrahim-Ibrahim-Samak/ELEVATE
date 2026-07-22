@@ -1,34 +1,29 @@
-import { useI18n } from '../../../core/i18n';
-import { container } from '../../../app/container';
+'use client';
+
+import { useI18n } from '@/core/i18n';
+import { useGetCatalogQuery } from '@/store/apiSlice';
 
 export function FeaturesCarousel() {
   const { t } = useI18n();
-  const features = container.catalogRepository.getFeatures();
+  const { data } = useGetCatalogQuery();
+  const features = data?.features ?? [];
+  if (features.length === 0) return null;
   const loop = [...features, ...features];
 
   return (
-    <section style={{ padding: '110px 5vw 90px' }}>
-      <div style={{ overflow: 'hidden' }}>
-        <div
-          className="feature-track"
-          style={{
-            display: 'flex',
-            gap: 18,
-            width: 'max-content',
-            animation: 'featureScroll 24s linear infinite',
-          }}
-        >
+    <section className="px-[5vw] pt-[110px] pb-[90px]">
+      <div className="overflow-hidden">
+        <div className="feature-track flex gap-[18px] w-max animate-featureScroll">
           {loop.map((f, i) => (
             <div
               key={`${f.id}-${i}`}
-              className="feature-card"
-              style={{ padding: '32px 28px', minHeight: 200, width: 280, flexShrink: 0 }}
+              className="feature-card px-7 py-8 min-h-[200px] w-[280px] shrink-0"
             >
-              <div style={{ fontSize: 30, marginBottom: 18 }}>{f.icon}</div>
-              <div style={{ fontWeight: 900, fontSize: 19, marginBottom: 8 }}>
+              <div className="text-[30px] mb-[18px]">{f.icon}</div>
+              <div className="font-black text-[19px] mb-2">
                 {t(`features.items.${f.id}.title`)}
               </div>
-              <div style={{ color: '#a5a59f', fontSize: '14.5px', lineHeight: 1.55 }}>
+              <div className="text-[#a5a59f] text-[14.5px] leading-[1.55]">
                 {t(`features.items.${f.id}.desc`)}
               </div>
             </div>
