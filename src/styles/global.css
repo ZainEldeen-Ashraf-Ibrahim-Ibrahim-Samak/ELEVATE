@@ -1,0 +1,215 @@
+/* Design tokens — single source of truth for brand styling */
+:root {
+  --primary: #e8ff5c;
+  --secondary: #000000;
+  --surface: #0a0a0a;
+  --surface-alt: #111111;
+  --card: #141414;
+  --card-hover: #181818;
+  --text: #e8e8e2;
+  --text-soft: #c8c8c2;
+  --text-muted: #8a8a85;
+  --text-faint: #7a7a76;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.25);
+  --font-display: 'Anton', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --radius-card: 18px;
+  --radius-pill: 999px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--secondary);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--surface);
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes signReveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes featureScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* RTL keeps horizontal motion identical */
+[dir='rtl'] .marquee-track,
+[dir='rtl'] .feature-track {
+  direction: ltr;
+}
+
+/* Reusable component classes (hover states need real CSS) */
+.btn {
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 800;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.btn--primary {
+  background: var(--primary);
+  color: var(--surface);
+  border-radius: var(--radius-pill);
+}
+
+.btn--primary:hover {
+  background: #fff;
+}
+
+.btn--ghost {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  color: #f5f5f0;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+}
+
+.btn--ghost:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn--card {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  color: #f5f5f0;
+  border-radius: 10px;
+}
+
+.btn--card:hover {
+  background: var(--primary);
+  color: var(--surface);
+  border-color: var(--primary);
+}
+
+.btn--card-solid {
+  width: 100%;
+  background: var(--primary);
+  border: none;
+  color: var(--surface);
+  border-radius: 10px;
+}
+
+.btn--card-solid:hover {
+  background: #fff;
+}
+
+.btn--icon {
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: #f5f5f0;
+}
+
+.btn--icon:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.navlink {
+  color: var(--text-soft);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.navlink:hover {
+  color: #fff;
+}
+
+.chip {
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.chip--idle {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: var(--text-soft);
+}
+
+.chip--idle:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.chip--active {
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: var(--surface);
+}
+
+.trainer-card {
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.trainer-card:hover {
+  border-color: var(--primary);
+}
+
+.feature-card {
+  background: var(--card);
+  border: 2px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-card);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.feature-card:hover {
+  border-color: var(--primary);
+  background: var(--card-hover);
+}
+
+.inbox-row {
+  transition: background 0.2s;
+}
+
+.inbox-row:hover {
+  background: #1a1a1a;
+}
