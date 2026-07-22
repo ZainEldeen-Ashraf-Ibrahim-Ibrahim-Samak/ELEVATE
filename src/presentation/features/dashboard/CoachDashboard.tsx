@@ -1,6 +1,7 @@
 'use client';
 
 import { useI18n } from '@/core/i18n';
+import { clientEnv } from '@/core/env/client';
 import { CoverImage, StatCard } from '@/presentation/components/ui';
 import { useAppVM } from '@/presentation/viewmodels/AppViewModelContext';
 import type { CoachTab } from '@/store/uiSlice';
@@ -24,7 +25,7 @@ export function CoachDashboard() {
 
   return (
     <DashboardShell
-      brand="ELEVATE"
+      brand={clientEnv.appName}
       brandSuffix={t('trainerDash.brandSuffix')}
       items={items}
       activeId={vm.coachTab}

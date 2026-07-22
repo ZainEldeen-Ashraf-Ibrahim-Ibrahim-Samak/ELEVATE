@@ -3,6 +3,8 @@ import { Anton, Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
 import './globals.css';
 import { Providers } from './providers';
+import { clientEnv } from '@/core/env/client';
+import { serverEnv } from '@/core/env/server';
 
 const anton = Anton({
   weight: '400',
@@ -17,7 +19,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'ELEVATE — Coaching Platform',
+  metadataBase: new URL(serverEnv.siteUrl),
+  title: `${clientEnv.appName} — Coaching Platform`,
   description:
     'Real trainers, daily adaptive plans, and workouts + meals sent straight to your phone.',
   icons: { icon: '/assets/elevate-wordmark.png' },
