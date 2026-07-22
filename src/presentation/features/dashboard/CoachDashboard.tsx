@@ -40,6 +40,7 @@ export function CoachDashboard() {
             value={String(coach.stats.activeClients)}
             label={t('trainerDash.stats.activeClients')}
           />
+          
           <StatCard
             value={coach.stats.avgRating.toFixed(1)}
             label={t('trainerDash.stats.avgRating')}
