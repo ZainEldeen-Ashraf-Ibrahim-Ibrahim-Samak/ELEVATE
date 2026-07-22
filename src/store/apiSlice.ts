@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { clientEnv } from '@/core/env/client';
 import type {
   AdminStats,
   Challenge,
@@ -38,7 +39,7 @@ export interface CoachResponse {
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  baseQuery: fetchBaseQuery({ baseUrl: clientEnv.apiBaseUrl }),
   endpoints: (builder) => ({
     getTrainers: builder.query<Trainer[], void>({ query: () => '/trainers' }),
     getCatalog: builder.query<CatalogResponse, void>({ query: () => '/catalog' }),
